@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    TextInput
+    TextInput,ToastAndroid
 
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
@@ -26,11 +26,19 @@ function Login(): JSX.Element {
             //  api call 
             axios.post('http://192.168.1.8:3000/api/auth/login', formData)
                 .then(res => {
-                    Alert.alert(res.data.message)
+                    ToastAndroid.showWithGravity(
+                        res.data.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                      );
                     navigation.navigate("Home")
                 })
                 .catch(e => {
-                    Alert.alert(e.response?.data.error)
+                    ToastAndroid.showWithGravity(
+                        e.response?.data.error,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                      );
                 })
 
 

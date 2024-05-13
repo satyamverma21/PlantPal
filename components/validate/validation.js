@@ -1,5 +1,5 @@
 
-import z from 'zod'
+import z, { boolean } from 'zod'
 
 
 const formSignupSchema = z.object({
@@ -13,6 +13,13 @@ const formloginSchema = z.object({
     password: z.string().min(1, { message: "Please enter password" }),
 });
 
+const sellPantSchema = z.object({
+    name: z.string().min(1, { message: "Plant name required" }),
+    price: z.string().min(1, { message: "Plant price is required" }),
+    contact: z.string().min(1, { message: "Contact information required" }),
+    additional: z.string().min(1, { message: "Additional information required" }),
+})
 
 
-export { formSignupSchema, formloginSchema }
+
+export { formSignupSchema, formloginSchema, sellPantSchema }

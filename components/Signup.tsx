@@ -7,6 +7,7 @@ import {
     Alert,
     TouchableOpacity,
     ScrollView,
+    ToastAndroid,
     TextInput
 
 } from 'react-native'
@@ -33,7 +34,11 @@ function Signup(): JSX.Element {
                     navigation.navigate("Home")
                 })
                 .catch(e => {
-                    Alert.alert(e.response?.data.error)
+                    ToastAndroid.showWithGravity(
+                        e.response?.data.error,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.CENTER,
+                      );
                 })
 
 
