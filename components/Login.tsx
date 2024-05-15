@@ -24,7 +24,7 @@ function Login(): JSX.Element {
         const data = formloginSchema.safeParse(formData);
         if (data.success) {
             //  api call 
-            axios.post('http://192.168.1.8:3000/api/auth/login', formData)
+            axios.post('http://192.168.1.11:3000/api/auth/login', formData)
                 .then(res => {
                     ToastAndroid.showWithGravity(
                         res.data.message,

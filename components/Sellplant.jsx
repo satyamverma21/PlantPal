@@ -1,38 +1,25 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import {
-    View,
-    Text,
-    StyleSheet,
-    Alert,
-    TouchableOpacity,
-    ScrollView,
-    ImageBackground,
-    TextInput
-    ,
+    View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, ImageBackground, TextInput,
 } from 'react-native'
-import CheckBox from '@react-native-community/checkbox';
-import ImagePicker from "react-native-image-crop-picker";
 
+import CheckBox from '@react-native-community/checkbox';
+import ImagePicker from "react-native-image-crop-picker"
 import { sellPantSchema } from './validate/validation';
+
+// todo: api implementation
 
 function Sellplant({ navigation }): JSX.Element {
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [username, setUsername] = useState('')
     const [bgImage, setBgImage] = useState('')
-    const [AdditionalInfo, setAdditionalInfo] = useState('')
-    const [isGallerySelected, setGallerySelection] = useState(true);
     const [errors, setErrors] = useState({});
-
+    const [isGallerySelected, setGallerySelection] = useState(true);
     const [formData, setFormData] = useState({ name: '', price: '', contact: '', additional: '' });
-
-
 
     function isBgImageEmpty() {
         if (bgImage === '') {
-            console.log('image not selected');
+            console.log('debug: image not selected'); //debug
             setErrors(
                 {
                     image: 'image not selected'
@@ -40,10 +27,7 @@ function Sellplant({ navigation }): JSX.Element {
             );
             return true
         }
-
-        console.log('begug1', bgImage)
         return false
-
     }
 
     function onSubmit() {
@@ -53,7 +37,9 @@ function Sellplant({ navigation }): JSX.Element {
         }
 
         const data = sellPantSchema.safeParse(formData);
-        if (data.success) { console.log('form submitted. ') }
+        if (data.success) {
+            console.log('form submitted. '); //debug //api
+        }
         else {
             const error = data.error?.format();
             setErrors({
@@ -63,10 +49,7 @@ function Sellplant({ navigation }): JSX.Element {
                 additional: error.additional?._errors,
             })
         }
-
     }
-
-
 
     async function getImage() {
 
@@ -79,8 +62,6 @@ function Sellplant({ navigation }): JSX.Element {
             );
             return
         }
-
-
 
         try {
             const action = isGallerySelected ? ImagePicker.openPicker : ImagePicker.openCamera;
@@ -97,17 +78,16 @@ function Sellplant({ navigation }): JSX.Element {
                 type: img.mime,
                 name: "image" + '_' + Math.floor(Math.random() * 100),
             });
-
             setErrors({})
 
         } catch (error) {
-            console.log(' Error fetching images', error);
+            console.log('debug: Error fetching images', error); //debug
             isBgImageEmpty();
         }
 
     }
 
-    async function submit() {
+    async function submit() { //delete
         axios.post('http://192.168.1.3:3000/signin', { email, password, username })
             .then(res => Alert.alert(res.data.msg))
             .catch(e => Alert.alert(e))
@@ -116,14 +96,12 @@ function Sellplant({ navigation }): JSX.Element {
 
     return (
         <View style={Style.main}>
-
             <ScrollView style={Style.container} contentContainerStyle={{ alignItems: 'center' }}>
-
                 <ImageBackground style={[Style.card, Style.border]}
                     resizeMode="cover"
-                    source={{ uri: bgImage.uri }}
-                >
+                    source={{ uri: bgImage.uri }}>
                     <TouchableOpacity style={Style.card} onPress={getImage} >
+
                         <Text style={{ fontWeight: 'bold', fontSize: 15, textAlign: 'center' }}>
                             Click image of your plant
                         </Text>
@@ -143,10 +121,12 @@ function Sellplant({ navigation }): JSX.Element {
                                 {errors.image}
                             </Text>
                         }
+
                     </TouchableOpacity>
+
                 </ImageBackground>
 
-                <TextInput onChangeText={setUsername} style={[Style.input]}
+                <TextInput onChangeText={text => { setFormData({ ...formData, name: text }); }} style={[Style.input]}
                     placeholder='Plant name'
                 />
 
@@ -158,9 +138,10 @@ function Sellplant({ navigation }): JSX.Element {
                     </Text>
                 }
 
-                <TextInput onChangeText={setEmail} style={[Style.input]}
+                <TextInput onChangeText={text => { setFormData({ ...formData, price: text }) }} style={[Style.input]}
                     placeholder='Plant Price'
                 />
+
                 {
                     errors.price &&
                     <Text
@@ -168,10 +149,12 @@ function Sellplant({ navigation }): JSX.Element {
                         {errors.price}
                     </Text>
                 }
-                <TextInput onChangeText={setPassword} style={[Style.input]}
+
+                <TextInput onChangeText={text => { setFormData({ ...formData, contact: text }) }} style={[Style.input]}
                     placeholder='Contact information'
                     secureTextEntry={true}
                 />
+
                 {
                     errors.contact &&
                     <Text
@@ -179,10 +162,12 @@ function Sellplant({ navigation }): JSX.Element {
                         {errors.contact}
                     </Text>
                 }
-                <TextInput onChangeText={setAdditionalInfo} style={[Style.input]}
+
+                <TextInput onChangeText={text => { setFormData({ ...formData, additional: text }) }} style={[Style.input]}
                     placeholder='Additional information'
                     secureTextEntry={true}
                 />
+
                 {
                     errors.additional &&
                     <Text
@@ -190,13 +175,15 @@ function Sellplant({ navigation }): JSX.Element {
                         {errors.additional}
                     </Text>
                 }
+
                 <TouchableOpacity onPress={
                     onSubmit
-                    // () => navigation.navigate("Home")
+                    // () => navigation.navigate("Home") //navigation //move to function
 
                 } style={[Style.container, Style.btn]}>
                     <Text style={{ fontWeight: 'bold' }}  >Add to market</Text>
                 </TouchableOpacity>
+
                 {
                     errors.password &&
                     <Text
@@ -207,7 +194,6 @@ function Sellplant({ navigation }): JSX.Element {
                 }
 
             </ScrollView>
-
         </View>
     )
 
