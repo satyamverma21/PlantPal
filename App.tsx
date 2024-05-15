@@ -32,7 +32,7 @@ import {
   Text,
   View
 } from 'react-native'
-import Plantnet from './components/Plantnet'
+import PlantId from './components/Plantid'
 
 
 const toastConfig = {
@@ -54,10 +54,7 @@ const toastConfig = {
       }}
     />
   ),
-  /*
-    Overwrite 'error' type,
-    by modifying the existing `ErrorToast` component
-  */
+
   error: (props) => (
     <ErrorToast
       {...props}
@@ -70,19 +67,8 @@ const toastConfig = {
       }}
     />
   ),
-  /*
-    Or create a completely new type - `tomatoToast`,
-    building the layout from scratch.
 
-    I can consume any custom `props` I want.
-    They will be passed when calling the `show` method (see below)
-  */
-  tomatoToast: ({ text1, props }) => (
-    <View style={{ height: 60, width: '100%', backgroundColor: 'tomato' }}>
-      <Text>{text1}</Text>
-      <Text>{props.uuid}</Text>
-    </View>
-  )
+
 };
 
 
@@ -110,7 +96,7 @@ function App(): JSX.Element {
           <Stack.Screen name="Market" component={Market} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={Plant} />
-          <Stack.Screen name="Plantnet" component={Plantnet} />
+          <Stack.Screen name="PlantId" component={PlantId} />
           <Stack.Screen name="Myplants" component={Myplants} />
           <Stack.Screen name="Sellplant" component={Sellplant} />
           <Stack.Screen name="Signup" component={Singup} />

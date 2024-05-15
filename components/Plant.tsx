@@ -31,6 +31,12 @@ function Plant(): JSX.Element {
     },
     ];
 
+    const updateBackground = (index, img) => {
+        const newArrayState = [...bgImages];
+        newArrayState[index] = img;
+        setbgImage(newArrayState);
+    };
+
     async function getImage(index) {
 
         if (index && !isPremiumSelected) {
@@ -41,12 +47,6 @@ function Plant(): JSX.Element {
             });
             return
         }
-
-        const updateBackground = (index, img) => {
-            const newArrayState = [...bgImages];
-            newArrayState[index] = img;
-            setbgImage(newArrayState);
-        };
 
         if (bgImages[index] !== '') {
             updateBackground(index, '');
@@ -77,17 +77,18 @@ function Plant(): JSX.Element {
     }
 
     async function plantiD(index) {
-        Toast.show({
-            type: 'success',
-            text1: 'Request sent ...',
-            text2: 'Please wait for response ☺'
-        });
+
         if (bgImages[index] !== '') {
             const formData = new FormData();
             formData.append('image', bgImages[index]);
             try {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Request sent ...',
+                    text2: 'Please wait for response ☺'
+                });
 
-                const url = isPremiumSelected ? '' : 'http://192.168.1.11:3000/';
+                const url = isPremiumSelected ? 'http://192.168.1.11:3000/idPlant' : 'http://192.168.1.11:3000/';
 
                 const response = await axios.post(url, formData, {
                     headers: {
@@ -96,15 +97,23 @@ function Plant(): JSX.Element {
                 });
                 if (response.data.msg)
                     Toast.show({
-                        type: 'success',
+                        type: 'error',
                         text1: response.data.msg,
                     });
                 else {
-                    const data = response.data.data
-                    Alert.alert('Plant detected:', `Plant name:\n ${data.species.commonNames} \n\n Plant scientific name:\n ${data.species.scientificName} \n\n Prediction confidence:\n ${data.score * 100}% `, [
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ]);
+
+                    if (isPremiumSelected) {
+                        navigation.navigate('PlantId', {data: response.data.data})
+
+                    } else {
+                        const data = response.data.data
+                        Alert.alert('Plant detected:', `Plant name:\n ${data.species.commonNames} \n\n Plant scientific name:\n ${data.species.scientificName} \n\n Prediction confidence:\n ${data.score * 100}% `, [
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                    }
+
                 }
+
 
             } catch (error) {
                 Toast.show({
