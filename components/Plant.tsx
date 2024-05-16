@@ -9,12 +9,14 @@ import ImagePicker from "react-native-image-crop-picker";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios'
 import Toast from 'react-native-toast-message';
+
 // import { Toast } from 'native-base';
 
 
 
 function Plant(): JSX.Element {
 
+    const baseUrl = "http://192.168.1.11:3000"
     const [isGallerySelected, setGallerySelection] = useState(true);
     const [isPremiumSelected, setPremiumSelection] = useState(false);
     const [bgImages, setbgImage] = useState(['', '']);
@@ -27,7 +29,7 @@ function Plant(): JSX.Element {
     {
         id: 1,
         msg: "Detect Disease of Plant",
-        fun: (index) => { console.log(index) }
+        fun: plantiD
     },
     ];
 
@@ -88,7 +90,13 @@ function Plant(): JSX.Element {
                     text2: 'Please wait for response ☺'
                 });
 
-                const url = isPremiumSelected ? 'http://192.168.1.11:3000/idPlant' : 'http://192.168.1.11:3000/';
+                let url = ''
+
+                if (isPremiumSelected) {
+                    url = index ? `${baseUrl}/idDicease` : `${baseUrl}/idPlant`;
+                } else url = baseUrl
+
+                // const url = isPremiumSelected ? 'http://192.168.1.11:3000/idPlant' : 'http://192.168.1.11:3000/';
 
                 const response = await axios.post(url, formData, {
                     headers: {
@@ -103,8 +111,8 @@ function Plant(): JSX.Element {
                 else {
 
                     if (isPremiumSelected) {
-                        navigation.navigate('PlantId', {data: response.data.data})
-
+                        const page = index? 'Dicease':'PlantId';
+                        navigation.navigate(page, { data: response.data.data })
                     } else {
                         const data = response.data.data
                         Alert.alert('Plant detected:', `Plant name:\n ${data.species.commonNames} \n\n Plant scientific name:\n ${data.species.scientificName} \n\n Prediction confidence:\n ${data.score * 100}% `, [

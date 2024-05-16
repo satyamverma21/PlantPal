@@ -6,6 +6,7 @@ import Navigator from './components/Navigator'
 import Myplants from './components/Myplants'
 import Sellplant from './components/Sellplant'
 import Market from './components/Market'
+import Dicease from './components/Dicease'
 import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 
 
@@ -97,6 +98,7 @@ function App(): JSX.Element {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Home" component={Plant} />
           <Stack.Screen name="PlantId" component={PlantId} />
+          <Stack.Screen name="Dicease" component={Dicease} />
           <Stack.Screen name="Myplants" component={Myplants} />
           <Stack.Screen name="Sellplant" component={Sellplant} />
           <Stack.Screen name="Signup" component={Singup} />
