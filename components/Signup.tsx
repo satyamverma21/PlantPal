@@ -14,6 +14,7 @@ import {
 
 import { formSignupSchema } from './validate/validation';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import Toast from 'react-native-toast-message';
 
 
 
@@ -28,17 +29,20 @@ function Signup(): JSX.Element {
         const data = formSignupSchema.safeParse(formData);
         if (data.success) {
             //  api call 
-            axios.post('http://192.168.1.8:3000/api/auth/createuser', formData)
+            axios.post('http://192.168.1.11:3000/api/auth/createuser', formData)
                 .then(res => {
-                    Alert.alert(res.data.message)
+                    Toast.show({
+                        type: 'success',
+                        text1: res.data.message,
+                    });
                     navigation.navigate("Home")
                 })
                 .catch(e => {
-                    ToastAndroid.showWithGravity(
-                        e.response?.data.error,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER,
-                      );
+                    Toast.show({
+                        type: 'error',
+                        text1: e.response?.data.error,
+                    });
+
                 })
 
 
@@ -121,7 +125,7 @@ function Signup(): JSX.Element {
                 </Text>
 
                 <TouchableOpacity
-                
+
                     onPress={
                         () => navigation.navigate("Login")
                     }

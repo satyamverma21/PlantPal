@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { formloginSchema } from './validate/validation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     View,
     Text,
@@ -10,9 +11,10 @@ import {
     TouchableOpacity,
     SafeAreaView,
     ScrollView,
-    TextInput,ToastAndroid
+    TextInput, ToastAndroid
 
 } from 'react-native'
+import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 function Login(): JSX.Element {
@@ -26,19 +28,31 @@ function Login(): JSX.Element {
             //  api call 
             axios.post('http://192.168.1.11:3000/api/auth/login', formData)
                 .then(res => {
-                    ToastAndroid.showWithGravity(
-                        res.data.message,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER,
-                      );
+
+                    Toast.show({
+                        type: 'success',
+                        text1: res.data.message,
+                    });
+
+                    //   storing username 
+                    const storeData = async (value) => {
+                        try {
+                            await AsyncStorage.setItem('username', formData.username);
+                            const value = await AsyncStorage.getItem('username')
+                            console.log("read-write process completed; read from storage: ", value);
+                        } catch (e) {
+                            console.log("error while storing log in info.")
+                        }
+                    };
+
                     navigation.navigate("Home")
                 })
                 .catch(e => {
-                    ToastAndroid.showWithGravity(
-                        e.response?.data.error,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.CENTER,
-                      );
+
+                    Toast.show({
+                        type: 'error',
+                        text1: e.response?.data.error,
+                    });
                 })
 
 

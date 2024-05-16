@@ -89,7 +89,7 @@ function App(): JSX.Element {
       <NavigationContainer theme={navTheme}>
 
 
-        <Stack.Navigator initialRouteName="Home" screenOptions={
+        <Stack.Navigator initialRouteName="Signup" screenOptions={
           {
             headerShown: false
           }
