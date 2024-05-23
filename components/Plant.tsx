@@ -16,7 +16,7 @@ import Toast from 'react-native-toast-message';
 
 function Plant(): JSX.Element {
 
-    const baseUrl = "http://192.168.1.11:3000"
+    const baseUrl = "http://192.168.1.3:3000"
     const [isGallerySelected, setGallerySelection] = useState(true);
     const [isPremiumSelected, setPremiumSelection] = useState(false);
     const [bgImages, setbgImage] = useState(['', '']);

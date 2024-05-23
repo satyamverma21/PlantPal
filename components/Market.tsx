@@ -4,9 +4,12 @@
  *
  * @format
  */
+import axios from 'axios'
 
 import { useState } from 'react';
 import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
     View,
     Text,
@@ -15,12 +18,13 @@ import {
     Alert,
     TouchableOpacity,
     SafeAreaView,
-    ScrollView
+    ScrollView,
+    Image
 
 } from 'react-native'
 
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
 
 
 const cards = [{
@@ -34,80 +38,104 @@ const cards = [{
 },
 {
     id: 1,
-    img:'image2',
+    img: 'image2',
     contact: 'email2',
     name: "Detect Disease of Plant",
     onClick: () => {
         Alert.alert('debug msg 2.');
-    }
-},
-{
-    id: 2,
-    img:'image2',
-    contact: 'email2',
-    name: "Detect Disease of Plant",
-    onClick: () => {
-        Alert.alert('debug msg 2.');
-    }
-},
-{
-    id: 3,
-    img:'image2',
-    contact: 'email2',
-    name: "Detect Disease of Plant",
-    onClick: () => {
-        Alert.alert('debug msg 2.');
-    }
-},
-{
-    id: 4,
-    img:'image2',
-    contact: 'email2',
-    name: "Detect Disease of Plant",
-    onClick: () => {
-        Alert.alert('hii');
     }
 },
 
+{
+    // username 
+    // name 
+    // price 
+    // contact 
+    // additional
+    // file 
+}
 
 ];
+const url = "http://192.168.1.3:3000"
 
 const cardComponent = (card: Object) => {
+    // console.log("card: ", card)
+    if (!card._id) return (<Text style={{ color: '#909090', fontWeight: 'bold', fontSize: 15, position: 'absolute' }}>
+        No Plant Data
+    </Text>)
     return (
-        <TouchableOpacity key={card.id} style={Style.card} onPress= {card.onClick}>
-            <Text style={{ color: '#909090', fontWeight: 'bold', fontSize: 15 }}>
-                {card.msg}
-            </Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
-                Plant image Placeholder {card.img}
-            </Text>
+        <TouchableOpacity key={card._id} style={Style.card} onPress={() => { 
+            Alert.alert(
+                'User: '+ card.username,  // Title
+                `Plant: ${card.name}.\nPrice: ${card.price} Rs.\nContact: ${card.contact}.\Additioanl Info: ${card.additional}.`,  // Message
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => console.log('OK Pressed')
+                  }
+                ],
+                { cancelable: true }
+              );
+        }}>
 
-
-            <Button
-                title="Plant Name"
-    
-                color="#71a93c"
+            <Image
+                style={{ flex: 1, width: "98%" }}
+                source={{ uri: url + card.file, }}
             />
+
+            <TouchableOpacity
+                style={[Style.container, Style.btn, { position: 'absolute', bottom: 10, backgroundColor: '#009F6B' }]}>
+                <Text style={{ fontWeight: 'bold', }}  > {card.name}</Text>
+            </TouchableOpacity>
+
         </TouchableOpacity>
     )
 }
 
 function Market(): JSX.Element {
-    const navigation = useNavigation(); 
+    const navigation = useNavigation();
+    const [market, setMarket] = useState([{}]);
+    const [dataLoaded, setdataLoaded] = useState(false);
+
+
+
+    const loadData = async () => {
+
+        if (!dataLoaded) {
+            try {
+                const { data } = await axios.get(url + '/market', {
+
+                    params: {
+                        id: await AsyncStorage.getItem('username'),
+                    }
+                })
+                setMarket(data.data);
+                console.log(market)
+                setdataLoaded(true)
+
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    loadData()
 
     return (
-        <View style={Style.main}>
+        <View style={Style.main} >
+
             <ScrollView>
-                {cards.map(card => cardComponent(card))}
+                {market.map(card => cardComponent(card))}
             </ScrollView>
 
             <View style={{ flex: 0, width: '75%', flexDirection: 'row', justifyContent: 'space-around' }}>
 
-                <TouchableOpacity onPress={() => {navigation.navigate("Sellplant") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Sellplant") }}
                     style={[Style.container, Style.btn]}>
                     <Text style={{ fontWeight: 'bold', }}  >Sell My Plant</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {navigation.navigate("Myplants") }}
+                <TouchableOpacity onPress={() => { navigation.navigate("Myplants") }}
                     style={[Style.container, Style.btn]}>
                     <Text style={{ fontWeight: 'bold', }}  >See My Plant</Text>
                 </TouchableOpacity>
@@ -138,7 +166,7 @@ const Style = StyleSheet.create({
         borderTopColor: '#8d6042',
         padding: 10,
     },
-    
+
     container: {
         // flex: 1,
         // margin:5,

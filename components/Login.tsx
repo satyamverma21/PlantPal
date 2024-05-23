@@ -26,7 +26,7 @@ function Login(): JSX.Element {
         const data = formloginSchema.safeParse(formData);
         if (data.success) {
             //  api call 
-            axios.post('http://192.168.1.11:3000/api/auth/login', formData)
+            axios.post('http://192.168.1.3:3000/api/auth/login', formData)
                 .then(res => {
 
                     Toast.show({
@@ -35,23 +35,22 @@ function Login(): JSX.Element {
                     });
 
                     //   storing username 
-                    const storeData = async (value) => {
+                    const storeData = async (_value) => {
                         try {
-                            await AsyncStorage.setItem('username', formData.username);
-                            const value = await AsyncStorage.getItem('username')
+                            await AsyncStorage.setItem('username', _value);
+                            // const value = await AsyncStorage.getItem('username')
                             console.log("read-write process completed; read from storage: ", value);
                         } catch (e) {
-                            console.log("error while storing log in info.")
+                            console.log("error while storing log in info.",e)
                         }
                     };
-
+                    storeData(formData.username)
                     navigation.navigate("Home")
                 })
                 .catch(e => {
-
                     Toast.show({
                         type: 'error',
-                        text1: e.response?.data.error,
+                        text1: e.message,
                     });
                 })
 

@@ -29,7 +29,7 @@ function Signup(): JSX.Element {
         const data = formSignupSchema.safeParse(formData);
         if (data.success) {
             //  api call 
-            axios.post('http://192.168.1.11:3000/api/auth/createuser', formData)
+            axios.post('http://192.168.1.3:3000/api/auth/createuser', formData)
                 .then(res => {
                     Toast.show({
                         type: 'success',

@@ -3,19 +3,20 @@ import axios from 'axios'
 import {
     View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, ImageBackground, TextInput,
 } from 'react-native'
-
+import Toast from 'react-native-toast-message';
 import CheckBox from '@react-native-community/checkbox';
 import ImagePicker from "react-native-image-crop-picker"
 import { sellPantSchema } from './validate/validation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// todo: api implementation
 
 function Sellplant({ navigation }): JSX.Element {
 
     const [bgImage, setBgImage] = useState('')
     const [errors, setErrors] = useState({});
     const [isGallerySelected, setGallerySelection] = useState(true);
-    const [formData, setFormData] = useState({ name: '', price: '', contact: '', additional: '' });
+    const [formData, setFormData] = useState({ name: '1', price: '1', contact: '1', additional: '1' });
+    // todo: api implementation
 
     function isBgImageEmpty() {
         if (bgImage === '') {
@@ -30,15 +31,41 @@ function Sellplant({ navigation }): JSX.Element {
         return false
     }
 
-    function onSubmit() {
+    async function onSubmit() {
 
         if (isBgImageEmpty()) {
             return
         }
+        const Data = new FormData();
+        Data.append('image', bgImage);
+        Data.append('username', await AsyncStorage.getItem('username'));
+        Data.append('name', formData.name);
+        Data.append('price', formData.price);
+        Data.append('contact', formData.contact);
+        Data.append('additional', formData.additional);
+        Data.append('File', bgImage.name);
+
 
         const data = sellPantSchema.safeParse(formData);
+        console.log(data.success, "debug 3")
         if (data.success) {
-            console.log('form submitted. '); //debug //api
+            // console.log('form submitted. '); //debug //api
+            try {
+                const response = await axios.post('http://192.168.1.3:3000/uploadPlant', Data, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+                if (response.data.msg)
+                    Toast.show({
+                        type: 'info',
+                        text1: response.data.msg,
+                    });
+                setErrors({});
+            } catch (error) {
+                console.log(error)
+
+            }
         }
         else {
             const error = data.error?.format();
@@ -73,10 +100,15 @@ function Sellplant({ navigation }): JSX.Element {
                     cropping: true,
                 }
             )
+
+            const getMime = (mime)=>{
+                if (mime === 'image/jpeg') return '.jpg';  else return '.png' 
+            }
+
             setBgImage({
                 uri: img.path,
                 type: img.mime,
-                name: "image" + '_' + Math.floor(Math.random() * 100),
+                name: "image" + '_' + Math.floor(Math.random() * 1000) + getMime(img.mime),
             });
             setErrors({})
 
@@ -85,12 +117,6 @@ function Sellplant({ navigation }): JSX.Element {
             isBgImageEmpty();
         }
 
-    }
-
-    async function submit() { //delete
-        axios.post('http://192.168.1.3:3000/signin', { email, password, username })
-            .then(res => Alert.alert(res.data.msg))
-            .catch(e => Alert.alert(e))
     }
 
 
@@ -128,6 +154,7 @@ function Sellplant({ navigation }): JSX.Element {
 
                 <TextInput onChangeText={text => { setFormData({ ...formData, name: text }); }} style={[Style.input]}
                     placeholder='Plant name'
+                    value={formData.name}
                 />
 
                 {
@@ -140,6 +167,8 @@ function Sellplant({ navigation }): JSX.Element {
 
                 <TextInput onChangeText={text => { setFormData({ ...formData, price: text }) }} style={[Style.input]}
                     placeholder='Plant Price'
+                    value={formData.price}
+                    keyboardType='numeric'
                 />
 
                 {
@@ -152,7 +181,9 @@ function Sellplant({ navigation }): JSX.Element {
 
                 <TextInput onChangeText={text => { setFormData({ ...formData, contact: text }) }} style={[Style.input]}
                     placeholder='Contact information'
-                    secureTextEntry={true}
+                    value={formData.contact}
+                    
+
                 />
 
                 {
@@ -165,7 +196,9 @@ function Sellplant({ navigation }): JSX.Element {
 
                 <TextInput onChangeText={text => { setFormData({ ...formData, additional: text }) }} style={[Style.input]}
                     placeholder='Additional information'
-                    secureTextEntry={true}
+                    value={formData.additional}
+
+
                 />
 
                 {
